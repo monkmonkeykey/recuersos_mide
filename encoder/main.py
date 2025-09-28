@@ -1,21 +1,25 @@
 import time
+from atm20_encoder import AMT20Encoder
 
 def main():
-    # Instancia el encoder
-    encoder = AMT20Encoder(cs_pin=18)  # Asegúrate de ajustar el pin CS si es necesario
+    # Define los tres CS en pines distintos
+    encA = AMT20Encoder(cs_pin=18)  # Encoder A
+    encB = AMT20Encoder(cs_pin=23)  # Encoder B
+    encC = AMT20Encoder(cs_pin=24)  # Encoder C
 
     try:
         while True:
-            # Actualiza la posición y obtén el valor actual
-            position = encoder.update_position()
+            posA = encA.update_position()
+            posB = encB.update_position()
+            posC = encC.update_position()
 
-            if position is not None:
-                print(f"Current position: {position}")
+            if None not in (posA, posB, posC):
+                print(f"A: {posA:4d}  B: {posB:4d}  C: {posC:4d}")
+            else:
+                # Si alguno falló, indícalo para depurar cableado/ruido/CS
+                print(f"A: {posA}  B: {posB}  C: {posC}")
 
-            # Aquí también puedes acceder directamente al atributo `current_position`
-            #print(f"Accessed directly: {encoder.get_current_position()}")
-
-            # Espera 250 ms antes de la siguiente lectura
+            # Ritmo de muestreo: ~50 ms por ciclo (20 Hz conjunto)
             time.sleep(0.05)
 
     except KeyboardInterrupt:
